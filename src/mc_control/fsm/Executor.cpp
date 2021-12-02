@@ -90,7 +90,7 @@ bool Executor::run(Controller & ctl, bool keep_state)
     if(state_)
     {
       state_->stop(ctl);
-      mc_rtc::log::warning("Interrupted {}", curr_state_);
+      ////mc_rtc::log::warning("Interrupted {}", curr_state_);
       complete(ctl, false);
     }
   }
@@ -113,7 +113,7 @@ bool Executor::run(Controller & ctl, bool keep_state)
     {
       ready_ = true;
       state_output_ = state_->output();
-      mc_rtc::log::success("Completed {} - output: {}", curr_state_, state_output_);
+      ////mc_rtc::log::success("Completed {} - output: {}", curr_state_, state_output_);
     }
     if(managed_)
     {
@@ -203,7 +203,7 @@ void Executor::next(Controller & ctl)
     ctl.resetPostures();
     state_teardown_dt_ = clock::now() - state_teardown_start;
   }
-  mc_rtc::log::success("Starting state {}", next_state_);
+  ////mc_rtc::log::success("Starting state {}", next_state_);
   if(config_.has("configs") && config_("configs").has(next_state_))
   {
     auto state_create_start = clock::now();
@@ -236,7 +236,7 @@ bool Executor::resume(const std::string & state)
 {
   if(!interrupt_triggered_ && state_ && !ready_)
   {
-    mc_rtc::log::warning("{} interrupted to  resume {}", curr_state_, state);
+    ////mc_rtc::log::warning("{} interrupted to  resume {}", curr_state_, state);
   }
   complete_ = false;
   interrupt_triggered_ = true;

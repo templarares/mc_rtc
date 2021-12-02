@@ -69,7 +69,7 @@ InitAttitudeSensor: ""
 # Logging #
 ###########
 # Set to true or false to enable/disable respectively
-Log: true
+Log: false
 
 # LogPolicy dictates whether logging-related disk operations happen in a
 # separate thread ("threaded") or in the same thread as the run() loop
