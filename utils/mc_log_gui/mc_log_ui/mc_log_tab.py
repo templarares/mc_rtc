@@ -764,6 +764,8 @@ class MCLogTab(QtWidgets.QWidget):
   @staticmethod
   def JointPlot(parent, joints, y1_prefix, y2_prefix, y1_diff_prefix, y2_diff_prefix, plot_limits = False):
     def prefix_to_label(joints, prefix, diff):
+      if type(prefix) is list:
+        return [prefix_to_label(joints, pi, diff) for pi in prefix]
       suffix = ''
       if diff:
         suffix += '_velocity'
@@ -788,27 +790,43 @@ class MCLogTab(QtWidgets.QWidget):
     for j in joints:
       jIndex = rjo.index(j)
       if y1_prefix:
-        y_data[0] += [ '{}_{}'.format(y1_prefix, jIndex) ]
-        y_data_labels[0] += [ '{}_{}'.format(y1_label, j) ]
-        if y1_prefix != "error" and plot_limits:
-          y_data[0] += [ '{}_limits_lower_{}'.format(y1_prefix, jIndex) ]
-          y_data_labels[0] += [ '{}_limits_lower_{}'.format(y1_label, j) ]
-          y_data[0] += [ '{}_limits_upper_{}'.format(y1_prefix, jIndex) ]
-          y_data_labels[0] += [ '{}_limits_upper_{}'.format(y1_label, j) ]
+        if not type(y1_prefix) is list:
+          y1_prefix = [y1_prefix]
+          y1_label = [y1_label]
+        for y, y_label in zip(y1_prefix, y1_label):
+          y_data[0] += [ '{}_{}'.format(y, jIndex) ]
+          y_data_labels[0] += [ '{}_{}'.format(y_label, j) ]
+          if y != "error" and plot_limits:
+            y_data[0] += [ '{}_limits_lower_{}'.format(y, jIndex) ]
+            y_data_labels[0] += [ '{}_limits_lower_{}'.format(y_label, j) ]
+            y_data[0] += [ '{}_limits_upper_{}'.format(y, jIndex) ]
+            y_data_labels[0] += [ '{}_limits_upper_{}'.format(y_label, j) ]
       if y2_prefix:
-        y_data[1] += [ '{}_{}'.format(y2_prefix, jIndex) ]
-        y_data_labels[1] += [ '{}_{}'.format(y2_label, j) ]
-        if y2_prefix != "error" and plot_limits:
-          y_data[1] += [ '{}_limits_lower_{}'.format(y2_prefix, jIndex) ]
-          y_data_labels[1] += [ '{}_limits_lower_{}'.format(y2_label, j) ]
-          y_data[1] += [ '{}_limits_upper_{}'.format(y2_prefix, jIndex) ]
-          y_data_labels[1] += [ '{}_limits_upper_{}'.format(y2_label, j) ]
+        if not type(y2_prefix) is list:
+          y2_prefix = [y2_prefix]
+          y2_label = [y2_label]
+        for y, y_label in zip(y2_prefix, y2_label):
+          y_data[1] += [ '{}_{}'.format(y, jIndex) ]
+          y_data_labels[1] += [ '{}_{}'.format(y_label, j) ]
+          if y != "error" and plot_limits:
+            y_data[1] += [ '{}_limits_lower_{}'.format(y, jIndex) ]
+            y_data_labels[1] += [ '{}_limits_lower_{}'.format(y_label, j) ]
+            y_data[1] += [ '{}_limits_upper_{}'.format(y, jIndex) ]
+            y_data_labels[1] += [ '{}_limits_upper_{}'.format(y_label, j) ]
       if y1_diff_prefix:
-        y_diff_data[0] += [ '{}_{}'.format(y1_diff_prefix, jIndex) ]
-        y_diff_data_labels[0] += [ '{}_{}'.format(y1_diff_label, j) ]
+        if not type(y1_diff_prefix) is list:
+          y1_diff_prefix = [y1_diff_prefix]
+          y1_diff_label = [y1_diff_label]
+        for y, y_label in zip(y1_diff_prefix, y1_diff_label):
+            y_diff_data[1] += [ '{}_{}'.format(y, jIndex) ]
+            y_diff_data_labels[1] += [ '{}_{}'.format(y_label, j) ]
       if y2_diff_prefix:
-        y_diff_data[1] += [ '{}_{}'.format(y2_diff_prefix, jIndex) ]
-        y_diff_data_labels[1] += [ '{}_{}'.format(y2_diff_label, j) ]
+        if not type(y2_diff_prefix) is list:
+          y2_diff_prefix = [y2_diff_prefix]
+          y2_diff_label = [y2_diff_label]
+        for y, y_label in zip(y2_diff_prefix, y2_diff_label):
+            y_diff_data[1] += [ '{}_{}'.format(y, jIndex) ]
+            y_diff_data_labels[1] += [ '{}_{}'.format(y_label, j) ]
     tab = MCLogTab.MakePlot(parent, PlotType.TIME, 't', y_data[0], y_data[1], y_data_labels[0], y_data_labels[1])
     for y, y_label in zip(y_diff_data[0], y_diff_data_labels[0]):
       RemoveSpecialPlotButton(y, tab, 0, "diff", y_label)
@@ -822,17 +840,25 @@ class MCLogTab(QtWidgets.QWidget):
       title += nTitle
       return title
     if y1_label:
-      title = updateTitle(title, y1_label.title())
-      tab.ui.canvas.y1_label(y1_label)
+      for y_label in y1_label:
+        title = updateTitle(title, y_label.title())
+      if len(y1_label) == 1:
+        tab.ui.canvas.y1_label(y1_label[0])
     if y2_label:
-      title = updateTitle(title, y2_label.title())
-      tab.ui.canvas.y2_label(y2_label)
+      for y_label in y2_label:
+        title = updateTitle(title, y_label.title())
+      if len(y2_label) == 1:
+        tab.ui.canvas.y2_label(y2_label[0])
     if y1_diff_label:
-      title = updateTitle(title, y1_diff_label.title())
-      tab.ui.canvas.y1_label(y1_diff_label)
+      for y_label in y1_diff_label:
+        title = updateTitle(title, y_label.title())
+      if len(y1_diff_label) == 1:
+        tab.ui.canvas.y1_diff_label(y1_diff_label[0])
     if y2_diff_label:
-      title = updateTitle(title, y2_diff_label.title())
-      tab.ui.canvas.y2_label(y2_diff_label)
+      for y_label in y2_diff_label:
+        title = updateTitle(title, y_label.title())
+      if len(y2_diff_label) == 1:
+        tab.ui.canvas.y2_diff_label(y2_diff_label[0])
     tab.ui.canvas.title(title)
     tab.ui.canvas.draw()
     return tab

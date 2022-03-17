@@ -764,7 +764,7 @@ class MCLogUI(QtWidgets.QMainWindow):
     self.polyColorsFile = os.path.expanduser("~") + "/.config/mc_log_ui/poly_colors.json"
     self.polyColorsScheme = ColorsSchemeConfiguration(self.polyColorsFile, 'Pastel1')
 
-    self.jointKeyPrefixes = ["q", "alpha", "tau", "error"]
+    self.jointKeyPrefixes = ["q", "alpha", "tau", "error", "current", "motor"]
 
     self.activeRobotAction = None
     self.rm = None
@@ -1233,6 +1233,7 @@ class MCLogUI(QtWidgets.QMainWindow):
         ("Command torques", "tauOut", None, None, None),
         ("Sensor/Command torques", "tauIn", "tauOut", None, None),
         ("Encoders/Commands", "qIn", "qOut", None, None),
+        ("Encoders|Commands/Current", ["qIn", "qOut"], "currentIn", None, None),
         ("Error/Torque", "error_q", "tauIn", None, None),
         ("Encoders velocity", None, None, "qIn", None),
         ("Command velocity", None, None, "qOut", None),
@@ -1241,7 +1242,12 @@ class MCLogUI(QtWidgets.QMainWindow):
         ("Command/Command velocity", "qOut", None, None, "qOut"),
         ]
     def validEntry(y):
-      return any([ y is None or (y is not None and k.startswith(y)) for k in self.data.keys() ])
+      if y is None:
+        return True
+      if type(y) is list:
+        return all([any([k.startswith(yi) for k in self.data.keys()]) for yi in y])
+      else:
+        return any([k.startswith(y) for k in self.data.keys()])
     menuEntries = [ (n, y1, y2, y1d, y2d) for n, y1, y2, y1d, y2d in menuEntries if all([validEntry(y) for y in [y1, y2, y1d, y2d]]) ]
     for n, y1, y2, y1d, y2d in menuEntries:
       act = QtWidgets.QAction(n, self.ui.menuCommonPlots)
