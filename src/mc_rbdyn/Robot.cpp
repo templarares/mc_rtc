@@ -806,6 +806,14 @@ Eigen::Vector3d Robot::zmp(const sva::ForceVecd & netWrench,
   return mc_rbdyn::zmp(netWrench, zmpFrame, minimalNetNormalForce);
 }
 
+bool Robot::maybeZMP(const sva::ForceVecd & netWrench,
+                     const sva::PTransformd & zmpFrame,
+                     Eigen::Vector3d & result,
+                     double minimalNetNormalForce) const
+{
+  return mc_rbdyn::maybeZMP(netWrench, zmpFrame, result, minimalNetNormalForce);
+}
+
 Eigen::Vector3d Robot::zmp(const std::vector<std::string> & sensorNames,
                            const Eigen::Vector3d & plane_p,
                            const Eigen::Vector3d & plane_n,

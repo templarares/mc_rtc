@@ -5,9 +5,11 @@
 namespace mc_rbdyn
 {
 
-Eigen::Vector3d zmp(const sva::ForceVecd & netTotalWrench,
+template<bool ThrowOnSmallForce>
+bool zmp(const sva::ForceVecd & netTotalWrench,
                     const Eigen::Vector3d & plane_p,
                     const Eigen::Vector3d & plane_n,
+                    Eigen::Vector3d & result,
                     double minimalNetNormalForce)
 {
   if(minimalNetNormalForce <= 0)
@@ -22,10 +24,25 @@ Eigen::Vector3d zmp(const sva::ForceVecd & netTotalWrench,
   // Prevent potential division by zero
   if(floorn_dot_force < minimalNetNormalForce)
   {
-    mc_rtc::log::error_and_throw("ZMP cannot be computed, projected force too small {}", floorn_dot_force);
+    if(ThrowOnSmallForce)
+    {
+      mc_rtc::log::error_and_throw("ZMP cannot be computed, projected force too small {}", floorn_dot_force);
+    }
+    mc_rtc::log::error("ZMP cannot be computed, projected force too small {}", floorn_dot_force);
+    return false;
   }
-  Eigen::Vector3d zmp = plane_p + plane_n.cross(moment_p) / floorn_dot_force;
-  return zmp;
+  result.noalias() = plane_p + plane_n.cross(moment_p) / floorn_dot_force;
+  return true;
+}
+
+Eigen::Vector3d zmp(const sva::ForceVecd & netTotalWrench,
+                    const Eigen::Vector3d & plane_p,
+                    const Eigen::Vector3d & plane_n,
+                    double minimalNetNormalForce)
+{
+  Eigen::Vector3d result;
+  zmp<true>(netTotalWrench, plane_p, plane_n, result, minimalNetNormalForce);
+  return result;
 }
 
 Eigen::Vector3d zmp(const sva::ForceVecd & netWrench, const sva::PTransformd & zmpFrame, double minimalNetNormalForce)
@@ -33,6 +50,25 @@ Eigen::Vector3d zmp(const sva::ForceVecd & netWrench, const sva::PTransformd & z
   Eigen::Vector3d n = zmpFrame.rotation().row(2);
   Eigen::Vector3d p = zmpFrame.translation();
   return zmp(netWrench, p, n, minimalNetNormalForce);
+}
+
+bool maybeZMP(const sva::ForceVecd & netTotalWrench,
+              const Eigen::Vector3d & plane_p,
+              const Eigen::Vector3d & plane_n,
+              Eigen::Vector3d & result,
+              double minimalNetNormalForce)
+{
+  return zmp<false>(netTotalWrench, plane_p, plane_n, result, minimalNetNormalForce);
+}
+
+bool maybeZMP(const sva::ForceVecd & netWrench,
+              const sva::PTransformd & zmpFrame,
+              Eigen::Vector3d & result,
+              double minimalNetNormalForce)
+{
+  Eigen::Vector3d n = zmpFrame.rotation().row(2);
+  Eigen::Vector3d p = zmpFrame.translation();
+  return maybeZMP(netWrench, p, n, result, minimalNetNormalForce);
 }
 
 } // namespace mc_rbdyn

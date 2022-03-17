@@ -48,4 +48,16 @@ Eigen::Vector3d MC_RBDYN_DLLAPI zmp(const sva::ForceVecd & netTotalWrench,
 Eigen::Vector3d MC_RBDYN_DLLAPI zmp(const sva::ForceVecd & netTotalWrench,
                                     const sva::PTransformd & zmpFrame,
                                     double minimalNetNormalForce = 1.);
+
+MC_RBDYN_DLLAPI bool maybeZMP(const sva::ForceVecd & netTotalWrench,
+                              const Eigen::Vector3d & plane_p,
+                              const Eigen::Vector3d & plane_n,
+                              Eigen::Vector3d & result,
+                              double minimalNetNormalForce = 1.0);
+
+MC_RBDYN_DLLAPI bool maybeZMP(const sva::ForceVecd & netTotalWrench,
+                              const sva::PTransformd & zmpFrame,
+                              Eigen::Vector3d & result,
+                              double minimalNetNormalForce = 1.0);
+
 } // namespace mc_rbdyn

@@ -730,12 +730,7 @@ void StabilizerTask::run()
   if(!inTheAir_)
   {
     measuredNetWrench_ = robots_.robot(robotIndex_).netWrench(contactSensors);
-    try
-    {
-      measuredZMP_ =
-          robots_.robot(robotIndex_).zmp(measuredNetWrench_, zmpFrame_, c_.safetyThresholds.MIN_NET_TOTAL_FORCE_ZMP);
-    }
-    catch(std::runtime_error & e)
+    if(!robots_.robot(robotIndex_).maybeZMP(measuredNetWrench_, zmpFrame_, measuredZMP_, c_.safetyThresholds.MIN_NET_TOTAL_FORCE_ZMP))
     {
       mc_rtc::log::error("[{}] ZMP computation failed, keeping previous value {}", name(), measuredZMP_.transpose());
     }

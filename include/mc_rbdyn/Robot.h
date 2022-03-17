@@ -338,6 +338,11 @@ public:
                       const sva::PTransformd & zmpFrame,
                       double minimalNetNormalForce = 1.) const;
 
+  bool maybeZMP(const sva::ForceVecd & netTotalWrench,
+                const sva::PTransformd & zmpFrame,
+                Eigen::Vector3d & result,
+                double minimalNetNormalForce = 1.) const;
+
   /** Computes the ZMP from sensor names and a plane
    *
    * See \ref zmpDoc
