@@ -28,6 +28,14 @@ MCPostureController::MCPostureController(std::shared_ptr<mc_rbdyn::RobotModule> 
 
   postureTask->stiffness(1.0);
   mc_rtc::log::success("MCPostureController init done");
+  gui()->addElement({}, mc_rtc::gui::Button("Go to zero", [this]() {
+        std::map<std::string, std::vector<double>> target;
+	for(const auto & j : robot().module().ref_joint_order())
+	{
+	  target[j] = {0.0};
+	}
+	postureTask->target(target);
+			  }));
 }
 
 bool MCPostureController::run()

@@ -19,6 +19,18 @@ CompoundJointConstraint::CompoundJointConstraint(const mc_rbdyn::Robots & robots
                                                  const CompoundJointConstraintDescriptionVector & desc)
 : rIndex_(rIndex), name_("CompoundJointConstraint_" + robots.robot(rIndex).name()), dt_(dt)
 {
+  if (robots.robot(rIndex).name()=="bit_xuanyuan")
+  {
+    auto cj1 = mc_rbdyn::CompoundJointConstraintDescription{"L_wrist_1","L_wrist_2",{0,-1.74},{0.419,-1.152}};
+    auto cj2 = mc_rbdyn::CompoundJointConstraintDescription{"L_wrist_1","L_wrist_2",{-0.3141,-1.361},{-0.192,-1.5}};
+    auto cj3 = mc_rbdyn::CompoundJointConstraintDescription{"L_wrist_1","L_wrist_2",{0.436,0.907},{0,1.344}};
+    auto cj4 = mc_rbdyn::CompoundJointConstraintDescription{"L_wrist_1","L_wrist_2",{0,1.344},{-0.175,1.047}};
+    auto cjs = mc_rbdyn::CompoundJointConstraintDescriptionVector{cj1,cj2,cj3,cj4};
+    for(const auto & d : cjs)
+    {
+      addConstraint(robots, rIndex, d);
+    }
+  }
   for(const auto & d : desc)
   {
     addConstraint(robots, rIndex, d);
