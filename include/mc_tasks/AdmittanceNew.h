@@ -66,7 +66,7 @@ public:
   AdmittanceNew(const std::string & robotSurface,
                  const mc_rbdyn::Robots & robots,
                  unsigned robotIndex,
-                 double stiffness = 5.0,
+                 double stiffness = 500.0,
                  double weight = 1000.0);
 
   /*! \brief Reset the task
@@ -171,17 +171,18 @@ public:
     }
     else
     {
-      //sva::ForceVecd Robot::netWrench(const std::vector<std::string> & sensorNames) const
-      std::vector<std::string> contactSensors;
-      contactSensors.push_back("LeftFootForceSensor");
-      contactSensors.push_back("RightFootForceSensor");
-      contactSensors.push_back("LeftHandForceSensor");     
-      sva::ForceVecd res=robots_.robot(rIndex_).netWrench(contactSensors);
-      res*=-1;
-      res = surface_.X_0_s(robots_.robot(rIndex_)).dualMul(res);
-      auto v = res.vector();
-      mc_rtc::log::info("deduced hip wrench in surface frame, assuming zero net torque, is [{},{},{},{},{},{}]", v[0],v[1],v[2],v[3],v[4],v[5]);
-      return res;
+      // //sva::ForceVecd Robot::netWrench(const std::vector<std::string> & sensorNames) const
+      // std::vector<std::string> contactSensors;
+      // contactSensors.push_back("LeftFootForceSensor");
+      // contactSensors.push_back("RightFootForceSensor");
+      // contactSensors.push_back("LeftHandForceSensor");     
+      // sva::ForceVecd res=robots_.robot(rIndex_).netWrench(contactSensors);
+      // res*=-1;
+      // res = surface_.X_0_s(robots_.robot(rIndex_)).dualMul(res);
+      // auto v = res.vector();
+      // mc_rtc::log::info("deduced hip wrench in surface frame, assuming zero net torque, is [{},{},{},{},{},{}]", v[0],v[1],v[2],v[3],v[4],v[5]);
+      // return res;
+      return robots_.robot(rIndex_).surfaceWrench("RightFoot");
     }
   }
 

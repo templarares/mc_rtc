@@ -44,15 +44,21 @@ AdmittanceNew::AdmittanceNew(const std::string & surfaceName,
 void AdmittanceNew::update(mc_solver::QPSolver &)
 {
   // Compute wrench error
-  wrenchError_ = measuredWrench() - targetWrench_;
+  //wrenchError_ = measuredWrench() - targetWrench_;
+  wrenchError_ = targetWrench_ - measuredWrench();
 
   // Compute linear and angular velocity based on wrench error and admittance
   Eigen::Vector3d linearVel = admittance_.force().cwiseProduct(wrenchError_.force());
-  Eigen::Vector3d angularVel = admittance_.couple().cwiseProduct(wrenchError_.couple());
+  if (wrenchError_.force()(2)>0)
+  {
+    linearVel(2)*=2.0;
+  }
+  Eigen::Vector3d angularVel;
+  angularVel<<0,0,0;
 
   // Clamp both values in order to have a 'security'
   clampInPlaceAndWarn(linearVel, (-maxLinearVel_).eval(), maxLinearVel_, name_ + " linear velocity");
-  clampInPlaceAndWarn(angularVel, (-maxAngularVel_).eval(), maxAngularVel_, name_ + " angular velocity");
+  //clampInPlaceAndWarn(angularVel, (-maxAngularVel_).eval(), maxAngularVel_, name_ + " angular velocity");
 
   // Filter
   refVelB_ = velFilterGain_ * refVelB_ + (1 - velFilterGain_) * sva::MotionVecd(angularVel, linearVel);
