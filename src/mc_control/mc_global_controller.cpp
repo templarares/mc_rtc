@@ -294,6 +294,7 @@ void MCGlobalController::reset(const std::map<std::string, std::vector<double>> 
   AddController(current_ctrl);
   controller_ = controllers[current_ctrl].get();
   init(initqs, initAttitudes, true);
+  running = true;
 }
 
 void MCGlobalController::initEncoders(mc_rbdyn::Robot & robot, const std::vector<double> & initq)

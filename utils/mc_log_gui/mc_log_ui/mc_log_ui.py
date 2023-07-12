@@ -340,6 +340,7 @@ class MCLogJointDialog(QtWidgets.QDialog):
     row = 0
     col = 0
     if rm is not None:
+        print("?????")
         for i, j in enumerate(rm.ref_joint_order()):
           cBox = QtWidgets.QCheckBox(j, self)
           cBox.stateChanged.connect(partial(self.checkboxChanged, j))
@@ -349,6 +350,8 @@ class MCLogJointDialog(QtWidgets.QDialog):
           if col == 4:
             col = 0
             row += 1
+    else:
+        print("!!!!")
     self.layout.addWidget(jointsBox)
 
     optionsBox = QtWidgets.QGroupBox("Options", self)
